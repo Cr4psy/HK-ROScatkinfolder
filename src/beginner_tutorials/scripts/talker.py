@@ -37,16 +37,29 @@
 ## to the 'chatter' topic
 
 import rospy
+import time
+import Adafruit_ADS1x15
+import math
+
 from std_msgs.msg import String
+from std_msgs.msg import Float32
+
+
+
+adc = Adafruit_ADS1x15.ADS1015()
+GAIN=1
+
 
 def talker():
-    pub = rospy.Publisher('chatter', String, queue_size=10)
+    #pub = rospy.Publisher('chatter', String, queue_size=10)
+    pub = rospy.Publisher('chatter', Float32, queue_size=10)
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
-        hello_str = "hello world %s" % rospy.get_time()
-        rospy.loginfo(hello_str)
-        pub.publish(hello_str)
+        #hello_str = "hello world %s" % rospy.get_time()
+        val_str = adc.read_adc(0,gain=GAIN)*4.096/2047
+        rospy.loginfo(val_str)
+        pub.publish(val_str)
         rate.sleep()
 
 if __name__ == '__main__':
